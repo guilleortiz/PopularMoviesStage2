@@ -112,6 +112,8 @@ public class MovieDetail extends AppCompatActivity {
 
 
 
+
+
             }
         }
 
@@ -145,7 +147,10 @@ public class MovieDetail extends AppCompatActivity {
                 String  status=String.valueOf(favButton.isChecked());
                 Toast.makeText(MovieDetail.this, status, Toast.LENGTH_SHORT).show();
 
-                addMovieToFavorites(titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
+               // addMovieToFavorites(MovieId,titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
+
+                removeFavoriteMovie(MovieId);
+
 
             }
         });
@@ -163,9 +168,16 @@ public class MovieDetail extends AppCompatActivity {
         cursor=getAllMovies();
 
         cursor.moveToFirst();
-        String name=cursor.getString(1);
+        int number=cursor.getColumnCount();
+        for (int i=1;i<number;i++){
 
-        Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+            String info=cursor.getString(i);
+
+            Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
+
+        }
+
+
 
 
 
@@ -185,10 +197,11 @@ public class MovieDetail extends AppCompatActivity {
         );
     }
 
-    private void addMovieToFavorites(String name,String date, String rating,String plot,String trailer,String review){
+    private void addMovieToFavorites(String id,String name,String date, String rating,String plot,String trailer,String review){
 
         ContentValues cv = new ContentValues();
 
+        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,id);
         cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_NAME,name);
         cv.put(MovieContract.MovieEntry.COLUMN__MOVIE_RELEASE_DATE,date);
         cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,rating);
@@ -201,6 +214,15 @@ public class MovieDetail extends AppCompatActivity {
         }catch (Exception e){
             Toast.makeText(this, "Error "+e , Toast.LENGTH_LONG).show();
         }
+
+
+    }
+
+    private boolean removeFavoriteMovie(String id){
+
+        return mDb.delete(MovieContract.MovieEntry.TABLE_NAME,
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID +" = "+id,null) > 0;//retunr the boolean result
+
 
 
     }
