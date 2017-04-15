@@ -147,9 +147,11 @@ public class MovieDetail extends AppCompatActivity {
                 String  status=String.valueOf(favButton.isChecked());
                 Toast.makeText(MovieDetail.this, status, Toast.LENGTH_SHORT).show();
 
-               // addMovieToFavorites(MovieId,titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
+                //removeFavoriteMovie(MovieId);
+                mDb.execSQL("delete  from "+ MovieContract.MovieEntry.TABLE_NAME);
+                addMovieToFavorites(MovieId,titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
 
-                removeFavoriteMovie(MovieId);
+
 
 
             }
@@ -172,6 +174,7 @@ public class MovieDetail extends AppCompatActivity {
         for (int i=1;i<number;i++){
 
             String info=cursor.getString(i);
+            cursor.moveToNext();
 
             Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
 

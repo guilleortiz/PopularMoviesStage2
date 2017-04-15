@@ -12,7 +12,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME="movies.db";
 
-    private static final int DATABASE_VERSION=1;
+    private static final int DATABASE_VERSION=2;
 
     public MovieDbHelper(Context context) {
         super(context,DATABASE_NAME,null,DATABASE_VERSION);
@@ -23,10 +23,10 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
         final String SQL_CREATE_MOVIE_TABLE="CREATE TABLE "+
                 MovieContract.MovieEntry.TABLE_NAME+"("+
-                MovieContract.MovieEntry.COLUMN_MOVIE_ID+ " TEXT PRIMARY KEY ,"+
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID+ " INTEGER PRIMARY KEY ,"+
                 MovieContract.MovieEntry.COLUMN_MOVIE_NAME+" TEXT NOT NULL,"+
                 MovieContract.MovieEntry.COLUMN_MOVIE_POSTER+" TEXT,"+
-                MovieContract.MovieEntry.COLUMN__MOVIE_RELEASE_DATE+" TEXt"+
+                MovieContract.MovieEntry.COLUMN__MOVIE_RELEASE_DATE+" TEXT"+
                 MovieContract.MovieEntry.COLUMN_MOVIE_POSTER+" TEXT,"+
                 MovieContract.MovieEntry.COLUMN_MOVIE_RATING+" TEXT,"+
                 MovieContract.MovieEntry.COLUMN_MOVIE_PLOT+" TEXT,"+
@@ -40,7 +40,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS"+ MovieContract.MovieEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ MovieContract.MovieEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }
