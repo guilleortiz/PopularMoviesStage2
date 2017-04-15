@@ -147,9 +147,10 @@ public class MovieDetail extends AppCompatActivity {
                 String  status=String.valueOf(favButton.isChecked());
                 Toast.makeText(MovieDetail.this, status, Toast.LENGTH_SHORT).show();
 
-                //removeFavoriteMovie(MovieId);
-                mDb.execSQL("delete  from "+ MovieContract.MovieEntry.TABLE_NAME);
-                addMovieToFavorites(MovieId,titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
+                removeFavoriteMovie(Integer.parseInt(MovieId));
+               // mDb.execSQL("delete  from "+ MovieContract.MovieEntry.TABLE_NAME);
+                //addMovieToFavorites(Integer.parseInt(MovieId),titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
+                //addMovieToFavorites(11,"mititulo","12/87/84","8","historiaa de ","link","mu buena");
 
 
 
@@ -171,12 +172,15 @@ public class MovieDetail extends AppCompatActivity {
 
         cursor.moveToFirst();
         int number=cursor.getColumnCount();
-        for (int i=1;i<number;i++){
+       //
+        //for (int i=1;i<number;i++){
+        while(cursor.moveToNext()){
 
-            String info=cursor.getString(i);
-            cursor.moveToNext();
 
-            Toast.makeText(this, info, Toast.LENGTH_SHORT).show();
+            int id=cursor.getInt(0);
+            String titulo=cursor.getString(1);//
+
+            Toast.makeText(this, id+" "+titulo, Toast.LENGTH_SHORT).show();
 
         }
 
@@ -200,7 +204,7 @@ public class MovieDetail extends AppCompatActivity {
         );
     }
 
-    private void addMovieToFavorites(String id,String name,String date, String rating,String plot,String trailer,String review){
+    private void addMovieToFavorites(int id,String name,String date, String rating,String plot,String trailer,String review){
 
         ContentValues cv = new ContentValues();
 
@@ -221,7 +225,7 @@ public class MovieDetail extends AppCompatActivity {
 
     }
 
-    private boolean removeFavoriteMovie(String id){
+    private boolean removeFavoriteMovie(int id){
 
         return mDb.delete(MovieContract.MovieEntry.TABLE_NAME,
                 MovieContract.MovieEntry.COLUMN_MOVIE_ID +" = "+id,null) > 0;//retunr the boolean result
