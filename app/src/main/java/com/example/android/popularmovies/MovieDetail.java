@@ -1,6 +1,9 @@
 package com.example.android.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,6 +16,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.data.MovieDbHelper;
 import com.squareup.picasso.Picasso;
 
 import java.net.MalformedURLException;
@@ -51,6 +56,8 @@ public class MovieDetail extends AppCompatActivity {
     private Boolean click=false;
 
     private String YouLink="";
+
+    private SQLiteDatabase mDb;
 
 
 
@@ -137,10 +144,63 @@ public class MovieDetail extends AppCompatActivity {
             public void onClick(View view) {
                 String  status=String.valueOf(favButton.isChecked());
                 Toast.makeText(MovieDetail.this, status, Toast.LENGTH_SHORT).show();
+
+                addMovieToFavorites(titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
+
             }
         });
 
 
+
+
+
+        MovieDbHelper dbHelper= new MovieDbHelper(this);
+        mDb=dbHelper.getWritableDatabase();
+
+        //TestUtil.insertFakeData(mDb);
+
+        Cursor cursor;
+        cursor=getAllMovies();
+
+        cursor.moveToFirst();
+        String name=cursor.getString(1);
+
+        Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
+
+
+
+
+    }
+
+    private Cursor getAllMovies() {
+        // COMPLETED (6) Inside, call query on mDb passing in the table name and projection String [] order by COLUMN_TIMESTAMP
+        return mDb.query(
+                MovieContract.MovieEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                MovieContract.MovieEntry.COLUMN_MOVIE_NAME
+        );
+    }
+
+    private void addMovieToFavorites(String name,String date, String rating,String plot,String trailer,String review){
+
+        ContentValues cv = new ContentValues();
+
+        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_NAME,name);
+        cv.put(MovieContract.MovieEntry.COLUMN__MOVIE_RELEASE_DATE,date);
+        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,rating);
+        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_PLOT,plot);
+        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_TRAILER,trailer);
+        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_REVIEWS,review);
+
+        try {
+            mDb.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
+        }catch (Exception e){
+            Toast.makeText(this, "Error "+e , Toast.LENGTH_LONG).show();
+        }
 
 
     }

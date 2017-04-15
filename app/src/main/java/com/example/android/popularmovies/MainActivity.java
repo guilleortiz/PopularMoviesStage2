@@ -2,6 +2,8 @@ package com.example.android.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +16,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.example.android.popularmovies.data.MovieContract;
+import com.example.android.popularmovies.data.MovieDbHelper;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,6 +45,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     *
     *
     * */
+
+
+
 
 
     @Override
@@ -80,7 +89,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
 
         loadMovieData(defaultOrder);
+
+
     }
+
+
 
     public static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
