@@ -49,6 +49,7 @@ public class MovieDetail extends AppCompatActivity {
     private TextView mReviewUser,mReview;
 
     private CheckBox favButton;
+    private ImageView deleteButton;
 
    // private TextView mTrailer;
    // private String trailer;
@@ -80,6 +81,7 @@ public class MovieDetail extends AppCompatActivity {
         mReviewUser=(TextView)findViewById(R.id.tv_reviewAuthor);
 
         favButton=(CheckBox)findViewById(R.id.favoriteStar);
+        deleteButton=(ImageView)findViewById(R.id.delete);
 
        // mTrailer=(TextView)findViewById(R.id.tv_trailer);
 
@@ -108,7 +110,8 @@ public class MovieDetail extends AppCompatActivity {
                         .into(mPoster);
 
                 MovieId=intentThatStartedThisActivity.getStringExtra("id");
-                //Toast.makeText(this, trailer, Toast.LENGTH_LONG).show();
+
+               // addMovieToFavorites(22,"mititulo","12/87/84","8","historiaa de ","link","mu buena");
 
 
 
@@ -123,10 +126,13 @@ public class MovieDetail extends AppCompatActivity {
 
         LinearLayout app_layer = (LinearLayout) findViewById (R.id.Ll_trailer);
         app_layer.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+
                  click=true;
-                //Toast.makeText(MovieDetail.this,trailer+"click" , Toast.LENGTH_SHORT).show();
+
+
                 if (linkReady&& click){
                     startActivity(new Intent(
                             Intent.ACTION_VIEW, Uri.parse(YouLink)));
@@ -140,25 +146,43 @@ public class MovieDetail extends AppCompatActivity {
 
             }
         });
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                
+                removeFavoriteMovie(Integer.parseInt(MovieId));
+
+            }
+        });
 
         favButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 String  status=String.valueOf(favButton.isChecked());
                 Toast.makeText(MovieDetail.this, status, Toast.LENGTH_SHORT).show();
 
-                removeFavoriteMovie(Integer.parseInt(MovieId));
+
+
+
                // mDb.execSQL("delete  from "+ MovieContract.MovieEntry.TABLE_NAME);
-                //addMovieToFavorites(Integer.parseInt(MovieId),titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
-                //addMovieToFavorites(11,"mititulo","12/87/84","8","historiaa de ","link","mu buena");
+               addMovieToFavorites(Integer.parseInt(MovieId),titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
+              //  addMovieToFavorites(22,"mititulo","12/87/84","8","historiaa de ","link","mu buena");
 
 
 
 
             }
         });
+        /*
 
+        if (IsFavorite(Integer.parseInt(MovieId))){
 
+            favButton.setChecked(true);
+
+        }else {
+            favButton.setChecked(false);
+        }*/
 
 
 
@@ -171,7 +195,7 @@ public class MovieDetail extends AppCompatActivity {
         cursor=getAllMovies();
 
         cursor.moveToFirst();
-        int number=cursor.getColumnCount();
+       // int number=cursor.getColumnCount();
        //
         //for (int i=1;i<number;i++){
         while(cursor.moveToNext()){
@@ -191,8 +215,10 @@ public class MovieDetail extends AppCompatActivity {
 
     }
 
+
+
     private Cursor getAllMovies() {
-        // COMPLETED (6) Inside, call query on mDb passing in the table name and projection String [] order by COLUMN_TIMESTAMP
+        //  Inside, call query on mDb passing in the table name and projection String [] order by COLUMN_TIMESTAMP
         return mDb.query(
                 MovieContract.MovieEntry.TABLE_NAME,
                 null,
@@ -200,8 +226,34 @@ public class MovieDetail extends AppCompatActivity {
                 null,
                 null,
                 null,
-                MovieContract.MovieEntry.COLUMN_MOVIE_NAME
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID
         );
+    }
+    public boolean IsFavorite(int favId){
+
+        Cursor cursor;
+        cursor=getAllMovies();
+
+        cursor.moveToFirst();
+
+        while(cursor.moveToNext()){
+
+
+            int id=cursor.getInt(0);
+
+            if (favId==id){
+
+                Toast.makeText(this,"isFavorite", Toast.LENGTH_SHORT).show();
+                return true;
+
+            }
+
+
+
+        }
+
+        return false;
+
     }
 
     private void addMovieToFavorites(int id,String name,String date, String rating,String plot,String trailer,String review){
