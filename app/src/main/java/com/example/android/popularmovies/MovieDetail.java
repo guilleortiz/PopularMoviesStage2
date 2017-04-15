@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -146,15 +147,31 @@ public class MovieDetail extends AppCompatActivity {
 
             }
         });
+        /*
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+
                 removeFavoriteMovie(Integer.parseInt(MovieId));
 
             }
-        });
+        });*/
 
+        favButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b==true){
+                    addMovieToFavorites(Integer.parseInt(MovieId),titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
+                    Toast.makeText(MovieDetail.this, "added", Toast.LENGTH_SHORT).show();
+
+                }else if(b==false){
+                    removeFavoriteMovie(Integer.parseInt(MovieId));
+                    Toast.makeText(MovieDetail.this, "deleted", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+/*
         favButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -165,17 +182,17 @@ public class MovieDetail extends AppCompatActivity {
 
 
 
-               // mDb.execSQL("delete  from "+ MovieContract.MovieEntry.TABLE_NAME);
+              //  mDb.execSQL("delete  from "+ MovieContract.MovieEntry.TABLE_NAME);
                addMovieToFavorites(Integer.parseInt(MovieId),titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
-              //  addMovieToFavorites(22,"mititulo","12/87/84","8","historiaa de ","link","mu buena");
+              //addMovieToFavorites(22,"mititulo","12/87/84","8","historiaa de ","link","mu buena");
 
 
 
 
             }
-        });
-        /*
+        });*/
 
+/*
         if (IsFavorite(Integer.parseInt(MovieId))){
 
             favButton.setChecked(true);
@@ -189,20 +206,25 @@ public class MovieDetail extends AppCompatActivity {
         MovieDbHelper dbHelper= new MovieDbHelper(this);
         mDb=dbHelper.getWritableDatabase();
 
-        //TestUtil.insertFakeData(mDb);
+
 
         Cursor cursor;
         cursor=getAllMovies();
 
         cursor.moveToFirst();
-       // int number=cursor.getColumnCount();
-       //
-        //for (int i=1;i<number;i++){
+
         while(cursor.moveToNext()){
 
 
             int id=cursor.getInt(0);
             String titulo=cursor.getString(1);//
+
+            if (id==Integer.parseInt(MovieId)){
+                favButton.setChecked(true);
+                Toast.makeText(this, "es favotiro", Toast.LENGTH_SHORT).show();
+            }else {
+                //favButton.setChecked(false);
+            }
 
             Toast.makeText(this, id+" "+titulo, Toast.LENGTH_SHORT).show();
 
