@@ -156,11 +156,11 @@ public class MovieDetail extends AppCompatActivity {
                 if (b==true){
 
                     addMovieToFavorites(MovieId,titulo,poster,fecha,nota,plot,YouLink,mReview.getText().toString());
-                    Toast.makeText(MovieDetail.this, "added", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MovieDetail.this, "added to Favorites", Toast.LENGTH_SHORT).show();
 
                 }else if(b==false){
                     removeFavoriteMovie(MovieId);
-                    Toast.makeText(MovieDetail.this, "deleted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MovieDetail.this, "deleted from Favorites", Toast.LENGTH_SHORT).show();
 
                 }
             }
@@ -215,12 +215,12 @@ public class MovieDetail extends AppCompatActivity {
 
             if (id==MovieId){
                 favButton.setChecked(true);
-                Toast.makeText(this, "es favotiro", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(this, "es favotiro", Toast.LENGTH_SHORT).show();
             }else {
                 //favButton.setChecked(false);
             }
 
-            Toast.makeText(this, id+" "+titulo, Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, id+" "+titulo, Toast.LENGTH_SHORT).show();
 
         }
 

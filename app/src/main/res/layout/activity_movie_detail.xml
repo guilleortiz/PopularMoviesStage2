@@ -28,23 +28,15 @@
 
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/tv_original_title"
                     android:textSize="30dp"
 
+
                     android:padding="8dp"
                     android:textColor="@android:color/background_light" />
 
-                <CheckBox
-
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-
-                    android:id="@+id/favoriteStar"
-                    android:layout_weight="1"
-                    style="@android:style/Widget.CompoundButton.Star" />
 
 
 
@@ -75,6 +67,18 @@
 
                 android:textColor="@android:color/background_light"
                 android:padding="8dp" />
+
+            <CheckBox
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+
+                android:id="@+id/favoriteStar"
+                android:layout_weight="1"
+                style="@android:style/Widget.CompoundButton.Star"
+                 />
+
 
             <ImageView
                 android:layout_width="wrap_content"

@@ -88,7 +88,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         Context context= MovieAdapterViewHolder.mMovieImage.getContext();
 
 
-        Picasso.with(context).load(imageLink)
+        Picasso.with(context).load(imageLink).error(R.drawable.loading)
                 .into(MovieAdapterViewHolder.mMovieImage);
 
     }

@@ -3,7 +3,6 @@ package com.example.android.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -253,7 +252,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
                 showMovieDataView();
                 mMovieAdapter.setMovieData(movies);
             } else {
-                showErrorMessage();
+               // showErrorMessage();
+                Toast.makeText(MainActivity.this, "Showing favorite movies", Toast.LENGTH_SHORT).show();
+                mMovieAdapter.setMovieData(null);
+                mMovieAdapter.setMovieData(FavoriteQueries());
             }
         }
     }
@@ -302,7 +304,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Cursor c = getAllMovies();
 
         c.moveToFirst();
-        Toast.makeText(this, DatabaseUtils.dumpCursorToString(c), Toast.LENGTH_LONG).show();
+       // Toast.makeText(this, DatabaseUtils.dumpCursorToString(c), Toast.LENGTH_LONG).show();
 
         while (!c.isAfterLast()){
             //int id,String movieTitle, String moviePosterLink, String movieOverview, String userRating, String releaseDate) {
