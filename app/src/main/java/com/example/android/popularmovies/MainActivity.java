@@ -3,6 +3,7 @@ package com.example.android.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -37,6 +38,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     String defaultOrder="popular";
     String topRatedOrder="top_rated";
 
+    private SQLiteDatabase mDb;
+
     /*
     *
     * pluging parcelable =Android Parcelable code generator
@@ -60,6 +63,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
 
         mErrorMessageDisplay = (TextView) findViewById(R.id.tv_error_message_display);
+
+        MovieDbHelper dbHelper= new MovieDbHelper(this);
+        mDb=dbHelper.getWritableDatabase();
 
         int mNoOfColumns = calculateNoOfColumns(getApplicationContext());
 
@@ -164,6 +170,31 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
 
+    public ArrayList<Movie> CursorToArrayList (Cursor c){
+
+
+        ArrayList<Movie> favoriteMovies = new ArrayList<Movie>();
+        int number=c.getCount();
+
+        c.moveToFirst();
+        while (!c.isAfterLast()){
+
+            Movie OneFavMovie=new Movie(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getString(4),c.getString(5));
+
+            favoriteMovies.add(OneFavMovie);
+
+            c.moveToNext();
+        }
+
+
+
+
+        return favoriteMovies;
+
+    }
+
+
+
 
     public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
 
@@ -246,8 +277,62 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             mMovieAdapter.setMovieData(null);
             loadMovieData(topRatedOrder);
 
+        }else if(id==R.id.action_Favorites){
+
+            mMovieAdapter.setMovieData(null);
+            mMovieAdapter.setMovieData(FavoriteQueries());
+
+        }else if (id==R.id.action_Delete){
+            mDb.execSQL("delete  from "+ MovieContract.MovieEntry.TABLE_NAME);
+            Toast.makeText(this, "all favorites deleted", Toast.LENGTH_SHORT).show();
+
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    public  ArrayList<Movie> FavoriteQueries() {
+        ArrayList<Movie> favoriteMovies=new ArrayList<Movie>();
+
+
+        //MovieDbHelper dbHelper = new MovieDbHelper(this);
+        // SQLiteDatabase mDb = dbHelper.getWritableDatabase();
+
+
+        Cursor c = getAllMovies();
+
+        c.moveToFirst();
+        Toast.makeText(this, DatabaseUtils.dumpCursorToString(c), Toast.LENGTH_LONG).show();
+
+        while (!c.isAfterLast()){
+            //int id,String movieTitle, String moviePosterLink, String movieOverview, String userRating, String releaseDate) {
+
+
+            Movie OneFavMovie=new Movie(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getString(4),c.getString(5));
+
+            favoriteMovies.add(OneFavMovie);
+
+            c.moveToNext();
+        }
+        return favoriteMovies;
+    }
+
+    private Cursor getAllMovies() {
+        //  Inside, call query on mDb passing in the table name and projection String [] order by COLUMN_TIMESTAMP
+        return mDb.query(
+                MovieContract.MovieEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                MovieContract.MovieEntry.COLUMN_MOVIE_ID
+        );
+    }
+
+
+
+
+
+
 }

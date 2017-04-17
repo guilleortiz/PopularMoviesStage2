@@ -40,7 +40,7 @@ public final class OpenMovieJsonUtils {
 
                 JSONObject oneMovieData=results.getJSONObject(i);
 
-                String id=oneMovieData.getString("id");
+                int id=oneMovieData.getInt("id");
                 String originalTitle=oneMovieData.getString("original_title");
                 String poster_path= "http://image.tmdb.org/t/p/w780"+oneMovieData.getString("poster_path");
                 String overview = oneMovieData.getString("overview");

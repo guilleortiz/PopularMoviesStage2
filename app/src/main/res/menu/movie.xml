@@ -20,4 +20,11 @@
         android:title="Favorites"
         app:showAsAction="ifRoom"
         />
+
+    <item
+        android:id="@+id/action_Delete"
+        android:orderInCategory="4"
+        android:title="Delete"
+        app:showAsAction="ifRoom"
+        />
 </menu>

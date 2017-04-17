@@ -12,7 +12,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME="movies.db";
 
-    private static final int DATABASE_VERSION=2;
+    private static final int DATABASE_VERSION=3;
 
     public MovieDbHelper(Context context) {
         super(context,DATABASE_NAME,null,DATABASE_VERSION);
@@ -26,8 +26,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                 MovieContract.MovieEntry.COLUMN_MOVIE_ID+ " INTEGER PRIMARY KEY ,"+
                 MovieContract.MovieEntry.COLUMN_MOVIE_NAME+" TEXT NOT NULL,"+
                 MovieContract.MovieEntry.COLUMN_MOVIE_POSTER+" TEXT,"+
-                MovieContract.MovieEntry.COLUMN__MOVIE_RELEASE_DATE+" TEXT"+
-                MovieContract.MovieEntry.COLUMN_MOVIE_POSTER+" TEXT,"+
+                MovieContract.MovieEntry.COLUMN__MOVIE_RELEASE_DATE+" TEXT,"+
                 MovieContract.MovieEntry.COLUMN_MOVIE_RATING+" TEXT,"+
                 MovieContract.MovieEntry.COLUMN_MOVIE_PLOT+" TEXT,"+
                 MovieContract.MovieEntry.COLUMN_MOVIE_REVIEWS+" TEXT,"+

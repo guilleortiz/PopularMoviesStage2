@@ -6,7 +6,7 @@ package com.example.android.popularmovies;
 
 
     public class Movie {
-        String mId;
+        int mId;
         String mMovieTitle;
         String mMoviePosterLink;
         String mMovieOverview;
@@ -14,7 +14,7 @@ package com.example.android.popularmovies;
         String mReleaseDate;
        // String mTrailer;
 
-        public Movie(String id,String movieTitle, String moviePosterLink, String movieOverview, String userRating, String releaseDate) {
+        public Movie(int id,String movieTitle, String moviePosterLink, String movieOverview, String userRating, String releaseDate) {
 
             mId=id;
             mMovieTitle = movieTitle;
@@ -29,7 +29,7 @@ package com.example.android.popularmovies;
 
             return mMoviePosterLink;
         }
-        public String getMovieId(){
+        public int getMovieId(){
 
             return mId;
         }

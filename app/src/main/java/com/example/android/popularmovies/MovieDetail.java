@@ -30,7 +30,7 @@ import java.net.URL;
 
 public class MovieDetail extends AppCompatActivity {
 
-    private  String MovieId;
+    private  int MovieId;
 
     private TextView mTitulo;
     private String titulo;
@@ -50,7 +50,7 @@ public class MovieDetail extends AppCompatActivity {
     private TextView mReviewUser,mReview;
 
     private CheckBox favButton;
-    private ImageView deleteButton;
+
 
    // private TextView mTrailer;
    // private String trailer;
@@ -82,7 +82,7 @@ public class MovieDetail extends AppCompatActivity {
         mReviewUser=(TextView)findViewById(R.id.tv_reviewAuthor);
 
         favButton=(CheckBox)findViewById(R.id.favoriteStar);
-        deleteButton=(ImageView)findViewById(R.id.delete);
+
 
        // mTrailer=(TextView)findViewById(R.id.tv_trailer);
 
@@ -110,7 +110,8 @@ public class MovieDetail extends AppCompatActivity {
                 Picasso.with(this).load(poster)
                         .into(mPoster);
 
-                MovieId=intentThatStartedThisActivity.getStringExtra("id");
+                MovieId=intentThatStartedThisActivity.getIntExtra("id",0);
+
 
                // addMovieToFavorites(22,"mititulo","12/87/84","8","historiaa de ","link","mu buena");
 
@@ -147,25 +148,18 @@ public class MovieDetail extends AppCompatActivity {
 
             }
         });
-        /*
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                removeFavoriteMovie(Integer.parseInt(MovieId));
-
-            }
-        });*/
 
         favButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b==true){
-                    addMovieToFavorites(Integer.parseInt(MovieId),titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
+
+                    addMovieToFavorites(MovieId,titulo,poster,fecha,nota,plot,YouLink,mReview.getText().toString());
                     Toast.makeText(MovieDetail.this, "added", Toast.LENGTH_SHORT).show();
 
                 }else if(b==false){
-                    removeFavoriteMovie(Integer.parseInt(MovieId));
+                    removeFavoriteMovie(MovieId);
                     Toast.makeText(MovieDetail.this, "deleted", Toast.LENGTH_SHORT).show();
 
                 }
@@ -219,7 +213,7 @@ public class MovieDetail extends AppCompatActivity {
             int id=cursor.getInt(0);
             String titulo=cursor.getString(1);//
 
-            if (id==Integer.parseInt(MovieId)){
+            if (id==MovieId){
                 favButton.setChecked(true);
                 Toast.makeText(this, "es favotiro", Toast.LENGTH_SHORT).show();
             }else {
@@ -278,12 +272,13 @@ public class MovieDetail extends AppCompatActivity {
 
     }
 
-    private void addMovieToFavorites(int id,String name,String date, String rating,String plot,String trailer,String review){
+    private void addMovieToFavorites(int id,String name,String poster,String date, String rating,String plot,String trailer,String review){
 
         ContentValues cv = new ContentValues();
 
         cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID,id);
         cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_NAME,name);
+        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,poster);
         cv.put(MovieContract.MovieEntry.COLUMN__MOVIE_RELEASE_DATE,date);
         cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_RATING,rating);
         cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_PLOT,plot);
@@ -293,7 +288,7 @@ public class MovieDetail extends AppCompatActivity {
         try {
             mDb.insert(MovieContract.MovieEntry.TABLE_NAME, null, cv);
         }catch (Exception e){
-            Toast.makeText(this, "Error "+e , Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Error adding to Favorites"+e , Toast.LENGTH_LONG).show();
         }
 
 
@@ -309,13 +304,13 @@ public class MovieDetail extends AppCompatActivity {
     }
 
 
-    public class FetchReviewsTask extends AsyncTask<String,Void,String>{
+    public class FetchReviewsTask extends AsyncTask<Integer,Void,String>{
 
 
         @Override
-        protected String doInBackground(String... param) {
+        protected String doInBackground(Integer... param) {
 
-            String movieId="nada";
+            int movieId;
 
             if (param.length==0){
                 return null;
@@ -362,13 +357,13 @@ public class MovieDetail extends AppCompatActivity {
     }
 
 
-    public class FetchTrailerTask extends AsyncTask<String,Void,String>{
+    public class FetchTrailerTask extends AsyncTask<Integer,Void,String>{
 
 
         @Override
-        protected String doInBackground(String... param) {
+        protected String doInBackground(Integer... param) {
 
-           String movieId="nada";
+           int movieId;
 
             if (param.length==0){
                 return null;
