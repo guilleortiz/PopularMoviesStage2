@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.DataTask.TaskContract;
 import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.data.MovieDbHelper;
 import com.squareup.picasso.Picasso;
@@ -155,7 +156,23 @@ public class MovieDetail extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b==true){
 
-                    addMovieToFavorites(MovieId,titulo,poster,fecha,nota,plot,YouLink,mReview.getText().toString());
+                   // addMovieToFavorites(MovieId,titulo,poster,fecha,nota,plot,YouLink,mReview.getText().toString());
+
+                    ContentValues contentValues=new ContentValues();
+                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_ID,MovieId);
+                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_NAME,titulo);
+                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_POSTER,poster);
+                    contentValues.put(TaskContract.TasKEntry.COLUMN__MOVIE_RELEASE_DATE,fecha);
+                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_RATING,nota);
+                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_PLOT,plot);
+                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_TRAILER,YouLink);
+                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_REVIEWS,mReview.getText().toString());
+
+                    Uri uri=getContentResolver().insert(TaskContract.TasKEntry.CONTENT_URI,contentValues);
+                    if (uri!=null){
+                        Toast.makeText(MovieDetail.this, uri.toString(), Toast.LENGTH_LONG).show();
+                    }
+
                     Toast.makeText(MovieDetail.this, "added to Favorites", Toast.LENGTH_SHORT).show();
 
                 }else if(b==false){
