@@ -2,10 +2,15 @@ package com.example.android.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popularmovies.DataTask.TaskContract;
 import com.example.android.popularmovies.data.MovieContract;
 import com.example.android.popularmovies.data.MovieDbHelper;
 
@@ -25,7 +31,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler, LoaderManager.LoaderCallbacks<Cursor>{
     //String url="";
 
     private RecyclerView mRecyclerView;
@@ -34,6 +40,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private TextView mErrorMessageDisplay;
     private ProgressBar mLoadingIndicator;
+    private static final String SEARCH_ORDER="order";
+
+    String moviesOrder;
+
     String defaultOrder="popular";
     String topRatedOrder="top_rated";
 
@@ -54,7 +64,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onCreate(savedInstanceState);
+
+        if(savedInstanceState!=null){
+            moviesOrder=savedInstanceState.getString(SEARCH_ORDER);
+
+        }
+
+
         setContentView(R.layout.activity_main);
 
 
@@ -99,6 +117,18 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(SEARCH_ORDER,moviesOrder);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+    }
 
     public static int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
@@ -169,30 +199,67 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
 
-    public ArrayList<Movie> CursorToArrayList (Cursor c){
 
 
-        ArrayList<Movie> favoriteMovies = new ArrayList<Movie>();
-        int number=c.getCount();
+    public Loader<Cursor> onCreateLoader(int id, final Bundle loadreArgs){
 
-        c.moveToFirst();
-        while (!c.isAfterLast()){
+        return new AsyncTaskLoader<Cursor>(this) {
 
-            Movie OneFavMovie=new Movie(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getString(4),c.getString(5));
+            Cursor mFavoritesData=null;
 
-            favoriteMovies.add(OneFavMovie);
+            @Override
+            protected void onStartLoading() {
+                if (mFavoritesData != null) {
+                    // Delivers any previously loaded data immediately
+                    deliverResult(mFavoritesData);
+                } else {
+                    // Force a new load
+                    forceLoad();
+                }
 
-            c.moveToNext();
-        }
+                super.onStartLoading();
+            }
+
+            @Override
+            public Cursor loadInBackground() {
+
+                try{
+                    return getContentResolver().query(TaskContract.TasKEntry.CONTENT_URI,
+                            null,
+                            null,
+                            null,
+                            TaskContract.TasKEntry.COLUMN_MOVIE_RATING);
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                    return  null;
+                }
 
 
+            }
+
+            // deliverResult sends the result of the load, a Cursor, to the registered listener
+
+            @Override
+            public void deliverResult(Cursor data) {
+                mFavoritesData=data;
+                Toast.makeText(MainActivity.this, DatabaseUtils.dumpCursorToString(data), Toast.LENGTH_LONG).show();
 
 
-        return favoriteMovies;
+                super.deliverResult(data);
+            }
+        };
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
     }
 
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
 
 
     public class FetchMovieTask extends AsyncTask<String, Void, ArrayList<Movie>> {
@@ -213,19 +280,19 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
             String query = params[0];
 
-            String searchOrderBy=null;
+
             URL movieRequestUrl = null;
 
             if (query=="top_rated"){
-                searchOrderBy="top_rated";
+                moviesOrder="top_rated";
 
             }else if(query=="popular"){
-                searchOrderBy="popular";
+                moviesOrder="popular";
 
 
             }
             try {
-                movieRequestUrl = new URL("http://api.themoviedb.org/3/movie/"+searchOrderBy+"?api_key=7436e9325f7283bdded6ec8c4db0a4a8");
+                movieRequestUrl = new URL("http://api.themoviedb.org/3/movie/"+moviesOrder+"?api_key=7436e9325f7283bdded6ec8c4db0a4a8");
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
@@ -254,8 +321,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             } else {
                // showErrorMessage();
                 Toast.makeText(MainActivity.this, "Showing favorite movies", Toast.LENGTH_SHORT).show();
+
                 mMovieAdapter.setMovieData(null);
+
                 mMovieAdapter.setMovieData(FavoriteQueries());
+
             }
         }
     }
@@ -307,9 +377,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
        // Toast.makeText(this, DatabaseUtils.dumpCursorToString(c), Toast.LENGTH_LONG).show();
 
         while (!c.isAfterLast()){
+
             //int id,String movieTitle, String moviePosterLink, String movieOverview, String userRating, String releaseDate) {
-
-
             Movie OneFavMovie=new Movie(c.getInt(0),c.getString(1),c.getString(2),c.getString(3),c.getString(4),c.getString(5));
 
             favoriteMovies.add(OneFavMovie);

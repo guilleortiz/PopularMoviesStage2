@@ -50,8 +50,39 @@ public class TaskContentProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Cursor query(Uri uri, String[] strings, String s, String[] strings1, String s1) {
-        return null;
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortorder) {
+
+        final SQLiteDatabase db = mTaskDbHelper.getReadableDatabase();
+
+        int match=sUriMatcher.match(uri);
+
+
+
+
+
+
+
+
+        Cursor retcursor;
+
+        switch (match){
+            case FAVORITES:
+                retcursor=db.query(TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortorder);
+                break;
+            default:
+                throw  new UnsupportedOperationException("Unknow ur "+uri);
+        }
+        retcursor.setNotificationUri(getContext().getContentResolver(),uri);
+
+
+
+        return retcursor;
     }
 
     @Nullable
@@ -67,7 +98,7 @@ public class TaskContentProvider extends ContentProvider {
         final SQLiteDatabase db =mTaskDbHelper.getWritableDatabase();
 
         int match =sUriMatcher.match(uri);
-        Uri returnUri;
+        Uri returnUri=null;
 
         switch (match){
 
@@ -75,14 +106,7 @@ public class TaskContentProvider extends ContentProvider {
                 long id=db.insert(TABLE_NAME,null,values);
                 if (id>0){
                     returnUri= ContentUris.withAppendedId(TaskContract.TasKEntry.CONTENT_URI,id);
-
-
-
-                }else{
-                throw  new android.database.SQLException("Failed to insert into "+uri);
                 }
-
-
 
                 break;
             default:
@@ -90,7 +114,10 @@ public class TaskContentProvider extends ContentProvider {
 
         }
 
-        getContext().getContentResolver().notifyChange(uri,null);
+            getContext().getContentResolver().notifyChange(uri,null);
+
+
+
 
 
         return returnUri;
@@ -98,7 +125,41 @@ public class TaskContentProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String s, String[] strings) {
-        return 0;
+
+
+        final SQLiteDatabase db=mTaskDbHelper.getWritableDatabase();
+
+        // TODO (2) Write the code to delete a single row of data
+        // [Hint] Use selections to delete an item by its row ID
+
+        int match =sUriMatcher.match(uri);
+        int taskDeleted;
+
+        switch (match){
+
+            case FAVORITES_WITH_ID:
+                //URI: content://<authoruty>/task/#(any nuber as id)
+                String id = uri.getPathSegments().get(1);//grabs the id, get(0)woud get the path
+
+                String mSelection=" id =?";//the string of th id colom of the table task follow by an = and?
+                String[] mSelectionArgs=new String[]{id};//array that holds the value of the row id
+
+                taskDeleted= db.delete(TABLE_NAME,mSelection,mSelectionArgs);
+
+
+                break;
+            default:
+                throw  new UnsupportedOperationException("Unknown uri: "+uri);
+        }
+
+
+        // TODO (3) Notify the resolver of a change and return the number of items deleted
+
+        if (taskDeleted!=0){
+            getContext().getContentResolver().notifyChange(uri,null);
+        }
+        return taskDeleted;
+
     }
 
     @Override

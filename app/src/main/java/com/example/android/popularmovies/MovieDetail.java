@@ -2,6 +2,7 @@ package com.example.android.popularmovies;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -66,6 +67,8 @@ public class MovieDetail extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
 
 
         super.onCreate(savedInstanceState);
@@ -114,11 +117,6 @@ public class MovieDetail extends AppCompatActivity {
                 MovieId=intentThatStartedThisActivity.getIntExtra("id",0);
 
 
-               // addMovieToFavorites(22,"mititulo","12/87/84","8","historiaa de ","link","mu buena");
-
-
-
-
 
             }
         }
@@ -155,62 +153,56 @@ public class MovieDetail extends AppCompatActivity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b==true){
+                    if (IsFavorite(MovieId)){//if movie is already favorite dont insert
+                        return;
 
-                   // addMovieToFavorites(MovieId,titulo,poster,fecha,nota,plot,YouLink,mReview.getText().toString());
+                    }else{
+                        // addMovieToFavorites(MovieId,titulo,poster,fecha,nota,plot,YouLink,mReview.getText().toString());
 
-                    ContentValues contentValues=new ContentValues();
-                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_ID,MovieId);
-                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_NAME,titulo);
-                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_POSTER,poster);
-                    contentValues.put(TaskContract.TasKEntry.COLUMN__MOVIE_RELEASE_DATE,fecha);
-                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_RATING,nota);
-                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_PLOT,plot);
-                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_TRAILER,YouLink);
-                    contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_REVIEWS,mReview.getText().toString());
+                        ContentValues contentValues=new ContentValues();
+                        contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_ID,MovieId);
+                        contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_NAME,titulo);
+                        contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_POSTER,poster);
+                        contentValues.put(TaskContract.TasKEntry.COLUMN__MOVIE_RELEASE_DATE,fecha);
+                        contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_RATING,nota);
+                        contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_PLOT,plot);
+                        contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_TRAILER,YouLink);
+                        contentValues.put(TaskContract.TasKEntry.COLUMN_MOVIE_REVIEWS,mReview.getText().toString());
 
-                    Uri uri=getContentResolver().insert(TaskContract.TasKEntry.CONTENT_URI,contentValues);
-                    if (uri!=null){
-                        Toast.makeText(MovieDetail.this, uri.toString(), Toast.LENGTH_LONG).show();
+                        Uri uri=getContentResolver().insert(TaskContract.TasKEntry.CONTENT_URI,contentValues);
+                        if (uri!=null){
+                            Toast.makeText(MovieDetail.this, uri.toString(), Toast.LENGTH_LONG).show();
+                        }
+
+                        Toast.makeText(MovieDetail.this, "added to Favorites", Toast.LENGTH_SHORT).show();
+
                     }
 
-                    Toast.makeText(MovieDetail.this, "added to Favorites", Toast.LENGTH_SHORT).show();
+
 
                 }else if(b==false){
-                    removeFavoriteMovie(MovieId);
+                   // removeFavoriteMovie(MovieId);
+
+
+                    // TODO (1) Construct the URI for the item to delete
+                    //[Hint] Use getTag (from the adapter code) to get the id of the swiped item
+                    String stringId=Integer.toString(MovieId);
+
+                    Uri uri= TaskContract.TasKEntry.CONTENT_URI;
+                    uri=uri.buildUpon().appendPath(stringId).build();
+
+                    //we have the uri pointing to tha specific task
+
+                    // TODO (2) Delete a single row of data using a ContentResolver
+
+                    getContentResolver().delete(uri,null,null);
+                    //content://com.example.android.popularmovies/favorites/263115
                     Toast.makeText(MovieDetail.this, "deleted from Favorites", Toast.LENGTH_SHORT).show();
 
                 }
             }
         });
-/*
-        favButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                String  status=String.valueOf(favButton.isChecked());
-                Toast.makeText(MovieDetail.this, status, Toast.LENGTH_SHORT).show();
-
-
-
-
-              //  mDb.execSQL("delete  from "+ MovieContract.MovieEntry.TABLE_NAME);
-               addMovieToFavorites(Integer.parseInt(MovieId),titulo,fecha,nota,plot,YouLink,mReview.getText().toString());
-              //addMovieToFavorites(22,"mititulo","12/87/84","8","historiaa de ","link","mu buena");
-
-
-
-
-            }
-        });*/
-
-/*
-        if (IsFavorite(Integer.parseInt(MovieId))){
-
-            favButton.setChecked(true);
-
-        }else {
-            favButton.setChecked(false);
-        }*/
 
 
 
@@ -224,7 +216,8 @@ public class MovieDetail extends AppCompatActivity {
 
         cursor.moveToFirst();
 
-        while(cursor.moveToNext()){
+        while(!cursor.isAfterLast()){
+
 
 
             int id=cursor.getInt(0);
@@ -235,9 +228,11 @@ public class MovieDetail extends AppCompatActivity {
                // Toast.makeText(this, "es favotiro", Toast.LENGTH_SHORT).show();
             }else {
                 //favButton.setChecked(false);
-            }
 
-           // Toast.makeText(this, id+" "+titulo, Toast.LENGTH_SHORT).show();
+            }
+            cursor.moveToNext();
+
+
 
         }
 
@@ -245,6 +240,35 @@ public class MovieDetail extends AppCompatActivity {
 
 
 
+
+    }
+    private boolean IsFavorite(int id){
+        MovieDbHelper dbHelper= new MovieDbHelper(this);
+        mDb=dbHelper.getWritableDatabase();
+
+
+
+        Cursor cursor;
+        cursor=getAllMovies();
+
+        cursor.moveToFirst();
+
+        while(cursor.moveToNext()){
+
+
+            int fId=cursor.getInt(0);
+
+
+            if (fId==id){
+               return  true;
+            }else {
+               return  false;
+            }
+
+
+
+        }
+        return  false;
 
     }
 
@@ -262,33 +286,8 @@ public class MovieDetail extends AppCompatActivity {
                 MovieContract.MovieEntry.COLUMN_MOVIE_ID
         );
     }
-    public boolean IsFavorite(int favId){
 
-        Cursor cursor;
-        cursor=getAllMovies();
-
-        cursor.moveToFirst();
-
-        while(cursor.moveToNext()){
-
-
-            int id=cursor.getInt(0);
-
-            if (favId==id){
-
-                Toast.makeText(this,"isFavorite", Toast.LENGTH_SHORT).show();
-                return true;
-
-            }
-
-
-
-        }
-
-        return false;
-
-    }
-
+//add with out using ContentProvaider
     private void addMovieToFavorites(int id,String name,String poster,String date, String rating,String plot,String trailer,String review){
 
         ContentValues cv = new ContentValues();
@@ -319,6 +318,8 @@ public class MovieDetail extends AppCompatActivity {
 
 
     }
+
+
 
 
     public class FetchReviewsTask extends AsyncTask<Integer,Void,String>{
@@ -402,8 +403,6 @@ public class MovieDetail extends AppCompatActivity {
 
                 String videoLink="";
                 videoLink=OpenMovieJsonUtils.getTrailerStringFromJson(jsonTrailerResponse);
-                    String kk=videoLink;
-                //Toast.makeText(MovieDetail.this, videoLink, Toast.LENGTH_SHORT).show();
 
                 return videoLink;
 

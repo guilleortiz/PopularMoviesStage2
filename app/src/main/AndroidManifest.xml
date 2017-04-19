@@ -16,8 +16,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            android:screenOrientation="portrait"
         </activity>
-        <activity android:name=".MovieDetail"></activity>
+        <activity android:name=".MovieDetail">
+            android:screenOrientation="portrait"
+        </activity>
         
         <provider
             android:authorities="com.example.android.popularmovies"

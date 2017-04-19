@@ -18,33 +18,33 @@ public class TestUtil
         if(db == null){
             return;
         }
-        //create a list of fake movies
+
         List<ContentValues> list = new ArrayList<ContentValues>();
 
         ContentValues cv = new ContentValues();
         cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_NAME, "peli 1");
-        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_PLOT, "una peli mazzzzzzzzzzzzzzzzzzzzzzo bena con cosasss viste flcao");
+        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_PLOT, "una peli");
         list.add(cv);
 
 
         cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_NAME, "peli 2");
-        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_PLOT, "una peli mazzzzzzeeeeeeeeeeeeeeeeeeeeeeeesesese viste flcao");
+        cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_PLOT, "una peli  ");
         list.add(cv);
 
-        //insert all movies in one transaction
+
         try
         {
             db.beginTransaction();
-            //clear the table first
+
             db.delete (MovieContract.MovieEntry.TABLE_NAME,null,null);
-            //go through the list and add one by one
+
             for(ContentValues c:list){
                 db.insert(MovieContract.MovieEntry.TABLE_NAME, null, c);
             }
             db.setTransactionSuccessful();
         }
         catch (SQLException e) {
-            //too bad :(
+
         }
         finally
         {
